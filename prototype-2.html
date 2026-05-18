@@ -282,15 +282,16 @@ SECTIONS.forEach(s => {
 });
 
 // ── Pan / drag ──────────────────────────────────────────
-let translateX   = 0;
-let isDragging   = false;
-let dragStartX   = 0;
-let dragStartTX  = 0;
-let dragDelta    = 0;
-let velocity     = 0;
-let lastX        = 0;
-let lastTime     = 0;
-let rafId        = null;
+let translateX  = 0;
+let isDragging  = false;
+let dragStartX  = 0;
+let dragStartTX = 0;
+let dragDelta   = 0;
+let velocity    = 0;
+let lastX       = 0;
+let lastTime    = 0;
+let rafId       = null;
+let wheelTimer  = null;
 
 function getBounds() {
     const cw = colWidth();
@@ -298,10 +299,26 @@ function getBounds() {
     return { min: -(trackW - window.innerWidth), max: 0 };
 }
 
-function applyTranslate(x) {
+function colStep() { return colWidth() + GAP; }
+
+function setTrack(x, tilt) {
     const { min, max } = getBounds();
     translateX = Math.max(min, Math.min(max, x));
-    wallTrack.style.transform = `translateX(${translateX}px)`;
+    const t = Math.max(-7, Math.min(7, tilt || 0));
+    wallTrack.style.transform = t
+        ? `perspective(1200px) translateX(${translateX}px) rotateY(${t}deg)`
+        : `translateX(${translateX}px)`;
+}
+
+function snapToNearest() {
+    cancelAnimationFrame(rafId);
+    const step    = colStep();
+    const { min, max } = getBounds();
+    const snapped = Math.max(min, Math.min(max, -Math.round(-translateX / step) * step));
+    wallTrack.style.transition = 'transform 0.55s cubic-bezier(0.16,1,0.3,1)';
+    translateX = snapped;
+    wallTrack.style.transform = `translateX(${snapped}px)`;
+    setTimeout(() => wallTrack.style.transition = '', 560);
 }
 
 function startDrag(clientX) {
@@ -313,18 +330,20 @@ function startDrag(clientX) {
     lastX       = clientX;
     lastTime    = performance.now();
     wallTrack.classList.add('grabbing');
+    wallTrack.style.transition = '';
     cancelAnimationFrame(rafId);
+    clearTimeout(wheelTimer);
 }
 
 function moveDrag(clientX) {
     if (!isDragging) return;
     dragDelta = clientX - dragStartX;
-    applyTranslate(dragStartTX + dragDelta);
     const now = performance.now();
     const dt  = now - lastTime;
     if (dt > 0) velocity = ((clientX - lastX) / dt) * 16;
     lastX    = clientX;
     lastTime = now;
+    setTrack(dragStartTX + dragDelta, -velocity * 0.25);
 }
 
 function endDrag() {
@@ -335,11 +354,25 @@ function endDrag() {
 }
 
 function applyMomentum() {
-    velocity *= 0.91;
-    if (Math.abs(velocity) < 0.4) return;
-    applyTranslate(translateX + velocity);
-    rafId = requestAnimationFrame(applyMomentum);
+    velocity *= 0.88;
+    if (Math.abs(velocity) > 1) {
+        setTrack(translateX + velocity, -velocity * 0.2);
+        rafId = requestAnimationFrame(applyMomentum);
+    } else {
+        snapToNearest();
+    }
 }
+
+// Wheel / trackpad — pan freely then snap to column on idle
+wallOuter.addEventListener('wheel', e => {
+    e.preventDefault();
+    wallTrack.style.transition = '';
+    cancelAnimationFrame(rafId);
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    setTrack(translateX - delta * 1.2, 0);
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(snapToNearest, 120);
+}, { passive: false });
 
 wallTrack.addEventListener('mousedown',  e => { e.preventDefault(); startDrag(e.clientX); });
 document.addEventListener('mousemove',   e => moveDrag(e.clientX));
@@ -398,13 +431,12 @@ document.addEventListener('keydown', e => e.key === 'Escape' && closeSection());
 // ── Init ────────────────────────────────────────────────
 function init() {
     setupGrid();
-    // Start showing the 3 core columns (skip the 2 left side columns)
     const cw = colWidth();
     translateX = -(2 * (cw + GAP));
     wallTrack.style.transform = `translateX(${translateX}px)`;
 }
 
-window.addEventListener('resize', () => { setupGrid(); applyTranslate(translateX); });
+window.addEventListener('resize', () => { setupGrid(); setTrack(translateX, 0); });
 init();
 </script>
 </body>
