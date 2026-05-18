@@ -89,34 +89,10 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            position: relative;
-            overflow: hidden;
         }
 
         .section + .section {
             border-top: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        /* content sits above bg number */
-        .sec-label,
-        .sec-heading,
-        .sec-body,
-        .sec-demo { position: relative; z-index: 1; }
-
-        /* ── BACKGROUND NUMBER ──────────────────────── */
-        .sec-bg-num {
-            position: absolute;
-            right: -0.04em;
-            bottom: -0.18em;
-            font-size: clamp(180px, 26vw, 360px);
-            font-weight: 900;
-            letter-spacing: -0.06em;
-            line-height: 1;
-            color: rgba(0, 0, 0, 0.045);
-            pointer-events: none;
-            user-select: none;
-            will-change: transform;
-            z-index: 0;
         }
 
         .sec-label {
@@ -126,12 +102,8 @@
             text-transform: uppercase;
             color: rgba(0, 0, 0, 0.28);
             margin-bottom: 22px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
-        /* ── HEADING REVEAL ─────────────────────────── */
         .sec-heading {
             font-size: clamp(54px, 8vw, 108px);
             font-weight: 800;
@@ -141,27 +113,12 @@
             max-width: 960px;
         }
 
-        .headline-line {
-            display: block;
-            overflow: hidden;
-        }
-
-        .headline-inner {
-            display: block;
-            transform: translateY(110%);
-            transition: transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-            transition-delay: calc(0.1s + var(--i, 0) * 0.08s);
-        }
-
         .sec-body {
             font-size: 17px;
             line-height: 1.65;
             color: rgba(0, 0, 0, 0.48);
             max-width: 500px;
             margin-bottom: 52px;
-            opacity: 0;
-            transform: translateY(18px);
-            transition: opacity 0.6s ease 0.3s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.3s;
         }
 
         .sec-demo {
@@ -175,16 +132,7 @@
             letter-spacing: 0.1em;
             text-transform: uppercase;
             color: rgba(0, 0, 0, 0.18);
-            opacity: 0;
-            transform: translateY(24px) scale(0.98);
-            transition: opacity 0.6s ease 0.42s, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.42s;
         }
-
-        /* ── VISIBLE STATE ──────────────────────────── */
-        .section.visible .sec-label    { opacity: 1; transform: none; }
-        .section.visible .headline-inner { transform: translateY(0); }
-        .section.visible .sec-body     { opacity: 1; transform: none; }
-        .section.visible .sec-demo     { opacity: 1; transform: none; }
 
         /* ── MENU OVERLAY ──────────────────────────── */
         .overlay {
@@ -318,63 +266,54 @@
 <!-- SECTIONS -->
 <main>
     <section class="section" id="s0">
-        <span class="sec-bg-num" aria-hidden="true">01</span>
         <span class="sec-label">01 — Tone of Voice</span>
         <h2 class="sec-heading">How we<br>speak.</h2>
         <p class="sec-body">Confident, clear, human. We say what we mean without fuss — because the best writing never wastes anyone's time. Every word earns its place.</p>
         <div class="sec-demo">Voice examples</div>
     </section>
     <section class="section" id="s1">
-        <span class="sec-bg-num" aria-hidden="true">02</span>
         <span class="sec-label">02 — Typography</span>
         <h2 class="sec-heading">Letters<br>at work.</h2>
         <p class="sec-body">A commanding display face paired with a neutral body typeface. Hierarchy is visible. Scale is expressive. Together they hold any layout together.</p>
         <div class="sec-demo">Type specimens</div>
     </section>
     <section class="section" id="s2">
-        <span class="sec-bg-num" aria-hidden="true">03</span>
         <span class="sec-label">03 — Color Palette</span>
         <h2 class="sec-heading">Colour<br>with intent.</h2>
         <p class="sec-body">Earthy, restrained, purposeful. A neutral core with accent tones that pull focus exactly where it's needed — never decorative for decoration's sake.</p>
         <div class="sec-demo">Colour swatches</div>
     </section>
     <section class="section" id="s3">
-        <span class="sec-bg-num" aria-hidden="true">04</span>
         <span class="sec-label">04 — Photography</span>
         <h2 class="sec-heading">Real<br>moments.</h2>
         <p class="sec-body">Honest light. Unguarded expressions. Environments as they actually look. Our photography doesn't perform — it observes. That restraint makes it true.</p>
         <div class="sec-demo">Photo library</div>
     </section>
     <section class="section" id="s4">
-        <span class="sec-bg-num" aria-hidden="true">05</span>
         <span class="sec-label">05 — Iconography</span>
         <h2 class="sec-heading">Precise<br>marks.</h2>
         <p class="sec-body">Every icon lives on a 24px grid, drawn at a consistent stroke weight. Legible at any size, designed as a family rather than a loose collection.</p>
         <div class="sec-demo">Icon grid</div>
     </section>
     <section class="section" id="s5">
-        <span class="sec-bg-num" aria-hidden="true">06</span>
         <span class="sec-label">06 — Motion</span>
         <h2 class="sec-heading">Nothing<br>for show.</h2>
         <p class="sec-body">Motion is intention made visible. We animate to guide attention and confirm actions — never to impress. Gentle easing. Short durations. Purpose in every frame.</p>
         <div class="sec-demo">Motion principles</div>
     </section>
     <section class="section" id="s6">
-        <span class="sec-bg-num" aria-hidden="true">07</span>
         <span class="sec-label">07 — Layout</span>
         <h2 class="sec-heading">Room to<br>breathe.</h2>
         <p class="sec-body">A 12-column grid gives structure without constraint. Generous margins and typographic rhythm make space an active design choice, never an afterthought.</p>
         <div class="sec-demo">Grid system</div>
     </section>
     <section class="section" id="s7">
-        <span class="sec-bg-num" aria-hidden="true">08</span>
         <span class="sec-label">08 — Components</span>
         <h2 class="sec-heading">Built as<br>a system.</h2>
         <p class="sec-body">Each component works alone and with everything else. States are considered. Accessibility is non-negotiable. The system scales because the parts are honest.</p>
         <div class="sec-demo">Component library</div>
     </section>
     <section class="section" id="s8">
-        <span class="sec-bg-num" aria-hidden="true">09</span>
         <span class="sec-label">09 — Brand Story</span>
         <h2 class="sec-heading">Why we<br>exist.</h2>
         <p class="sec-body">Every decision traces back to a founding belief: good work, done honestly, is enough. That story isn't backstory — it's the lens behind every brand expression.</p>
@@ -498,15 +437,6 @@ function onScroll() {
             navSectionName.classList.remove('fade');
         }, 100);
     }
-
-    // Parallax background numbers
-    pageSections.forEach(sec => {
-        const bgNum = sec.querySelector('.sec-bg-num');
-        if (!bgNum) return;
-        const rect = sec.getBoundingClientRect();
-        const progress = 1 - rect.bottom / (rect.height + window.innerHeight);
-        bgNum.style.transform = `translateY(${progress * -50}px)`;
-    });
 }
 
 // ── Menu toggle ─────────────────────────────────────────
@@ -528,22 +458,6 @@ navPill.addEventListener('click',   openOverlay);
 navPill.addEventListener('keydown', e => e.key === 'Enter' && openOverlay());
 closeBtn.addEventListener('click',  closeOverlay);
 document.addEventListener('keydown', e => e.key === 'Escape' && closeOverlay());
-
-// ── Heading line split ──────────────────────────────────
-document.querySelectorAll('.sec-heading').forEach(h => {
-    h.innerHTML = h.innerHTML.split(/<br\s*\/?>/i).map((line, i) =>
-        `<span class="headline-line"><span class="headline-inner" style="--i:${i}">${line}</span></span>`
-    ).join('');
-});
-
-// ── Entrance observer ───────────────────────────────────
-const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-    });
-}, { threshold: 0.18 });
-
-pageSections.forEach(sec => observer.observe(sec));
 
 // ── Init ────────────────────────────────────────────────
 window.addEventListener('scroll', onScroll, { passive: true });
