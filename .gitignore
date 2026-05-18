@@ -1,0 +1,49 @@
+# Ignore everything by default
+*
+
+# But track specific project files
+!.gitignore
+!brand-guidelines.html
+!index.html
+!prototype2.html
+!*.css
+!*.js
+!*.ts
+!*.json
+!*.md
+!*.html
+
+# Directories to track (use !dir/ then !dir/**)
+# Add your project directories here as needed
+
+# Always ignore these even if explicitly unignored
+.DS_Store
+.CFUserTextEncoding
+.bundle/
+.cache/
+.npm/
+.local/
+.config/
+.ssh/
+.zsh_history
+.zsh_sessions/
+.claude.json
+.claude.json.backup
+.hyper.js
+.hyper_plugins/
+Applications/
+Library/
+Movies/
+Music/
+Pictures/
+Public/
+Desktop/
+Downloads/
+Documents/
+Creative\ Cloud\ Files*/
+*.webp
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.ico
