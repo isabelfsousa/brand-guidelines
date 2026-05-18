@@ -327,10 +327,9 @@ function calcTransform(offset) {
 
     const x    = sign * (FIRST_X + (abs - 1) * STRIDE);
     const rotY = -sign * SIDE_ROT;
-    const sc   = Math.max(0.68, 1 - abs * 0.06);
 
     return {
-        transform:     `translateX(${x}px) rotateY(${rotY}deg) scale(${sc})`,
+        transform:     `translateX(${x}px) rotateY(${rotY}deg)`,
         opacity:       abs <= MAX_VIS ? 1 : 0,
         zIndex:        30 - abs,
         pointerEvents: abs <= 3 ? 'auto' : 'none',
