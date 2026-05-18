@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Guidelines</title>
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f0ede6;
+            color: #1a1a1a;
+            overflow-x: hidden;
+        }
+
+        /* ── NAV PILL ──────────────────────────────── */
+        .nav {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 900;
+        }
+
+        .nav-pill {
+            position: relative;
+            display: inline-flex;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(240, 237, 230, 0.9);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 100px;
+            padding: 11px 22px;
+            white-space: nowrap;
+            min-width: 270px;
+        }
+
+        .nav-menu-label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            flex-shrink: 0;
+        }
+
+        .nav-sep {
+            flex-shrink: 0;
+            width: 1px;
+            height: 13px;
+            background: rgba(0, 0, 0, 0.18);
+        }
+
+        .nav-section-name {
+            font-size: 13px;
+            color: rgba(0, 0, 0, 0.5);
+            flex: 1;
+            transition: opacity 0.2s;
+        }
+
+        .nav-section-name.fade {
+            opacity: 0;
+        }
+
+        .nav-svg {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        /* ── PAGE SECTIONS ─────────────────────────── */
+        .section {
+            min-height: 100vh;
+            padding: 96px 64px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .section + .section {
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .sec-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(0, 0, 0, 0.28);
+            margin-bottom: 22px;
+        }
+
+        .sec-heading {
+            font-size: clamp(54px, 8vw, 108px);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 0.92;
+            margin-bottom: 32px;
+            max-width: 960px;
+        }
+
+        .sec-body {
+            font-size: 17px;
+            line-height: 1.65;
+            color: rgba(0, 0, 0, 0.48);
+            max-width: 500px;
+            margin-bottom: 52px;
+        }
+
+        .sec-demo {
+            height: 260px;
+            background: rgba(0, 0, 0, 0.055);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(0, 0, 0, 0.18);
+        }
+
+        /* ── MENU OVERLAY ──────────────────────────── */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 800;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 32px 52px 52px;
+            overflow-y: auto;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+                        visibility 0s 0.32s;
+        }
+
+        .overlay.open {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .overlay-close {
+            display: inline-flex;
+            align-items: center;
+            background: #e5e2db;
+            border: none;
+            border-radius: 100px;
+            padding: 11px 22px;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            cursor: pointer;
+            align-self: flex-start;
+            margin-bottom: 44px;
+            transition: background 0.15s;
+        }
+
+        .overlay-close:hover { background: #d5d2cb; }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .menu-card {
+            background: #c6c2bc;
+            border-radius: 12px;
+            padding: 22px;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+                        background 0.15s;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-3px) scale(1.012);
+            background: #b6b2ac;
+        }
+
+        .card-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 22px;
+            height: 22px;
+            opacity: 0;
+            transform: translate(-5px, 5px);
+            transition: opacity 0.2s, transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #1a1a1a;
+        }
+
+        .menu-card:hover .card-arrow {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+
+        .card-thumb {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 84px;
+            height: 84px;
+            background: rgba(255, 255, 255, 0.28);
+            border-radius: 7px;
+        }
+
+        .card-num {
+            position: absolute;
+            bottom: 40px;
+            left: 22px;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(0, 0, 0, 0.36);
+        }
+
+        .card-name {
+            position: absolute;
+            bottom: 20px;
+            left: 22px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-pill" id="navPill" role="button" tabindex="0" aria-label="Open navigation menu">
+        <div class="nav-inner" id="navInner">
+            <span class="nav-menu-label">Menu</span>
+            <div class="nav-sep"></div>
+            <span class="nav-section-name" id="navSectionName">1. Tone of Voice</span>
+        </div>
+        <svg class="nav-svg" id="navSvg" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path id="svgTrack" stroke="rgba(0,0,0,0.1)" stroke-width="1.5" fill="none"/>
+            <path id="svgFill"  stroke="#1a1a1a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+    </div>
+</nav>
+
+<!-- SECTIONS -->
+<main>
+    <section class="section" id="s0">
+        <span class="sec-label">01 — Tone of Voice</span>
+        <h2 class="sec-heading">How we<br>speak.</h2>
+        <p class="sec-body">Confident, clear, human. We say what we mean without fuss — because the best writing never wastes anyone's time. Every word earns its place.</p>
+        <div class="sec-demo">Voice examples</div>
+    </section>
+    <section class="section" id="s1">
+        <span class="sec-label">02 — Typography</span>
+        <h2 class="sec-heading">Letters<br>at work.</h2>
+        <p class="sec-body">A commanding display face paired with a neutral body typeface. Hierarchy is visible. Scale is expressive. Together they hold any layout together.</p>
+        <div class="sec-demo">Type specimens</div>
+    </section>
+    <section class="section" id="s2">
+        <span class="sec-label">03 — Color Palette</span>
+        <h2 class="sec-heading">Colour<br>with intent.</h2>
+        <p class="sec-body">Earthy, restrained, purposeful. A neutral core with accent tones that pull focus exactly where it's needed — never decorative for decoration's sake.</p>
+        <div class="sec-demo">Colour swatches</div>
+    </section>
+    <section class="section" id="s3">
+        <span class="sec-label">04 — Photography</span>
+        <h2 class="sec-heading">Real<br>moments.</h2>
+        <p class="sec-body">Honest light. Unguarded expressions. Environments as they actually look. Our photography doesn't perform — it observes. That restraint makes it true.</p>
+        <div class="sec-demo">Photo library</div>
+    </section>
+    <section class="section" id="s4">
+        <span class="sec-label">05 — Iconography</span>
+        <h2 class="sec-heading">Precise<br>marks.</h2>
+        <p class="sec-body">Every icon lives on a 24px grid, drawn at a consistent stroke weight. Legible at any size, designed as a family rather than a loose collection.</p>
+        <div class="sec-demo">Icon grid</div>
+    </section>
+    <section class="section" id="s5">
+        <span class="sec-label">06 — Motion</span>
+        <h2 class="sec-heading">Nothing<br>for show.</h2>
+        <p class="sec-body">Motion is intention made visible. We animate to guide attention and confirm actions — never to impress. Gentle easing. Short durations. Purpose in every frame.</p>
+        <div class="sec-demo">Motion principles</div>
+    </section>
+    <section class="section" id="s6">
+        <span class="sec-label">07 — Layout</span>
+        <h2 class="sec-heading">Room to<br>breathe.</h2>
+        <p class="sec-body">A 12-column grid gives structure without constraint. Generous margins and typographic rhythm make space an active design choice, never an afterthought.</p>
+        <div class="sec-demo">Grid system</div>
+    </section>
+    <section class="section" id="s7">
+        <span class="sec-label">08 — Components</span>
+        <h2 class="sec-heading">Built as<br>a system.</h2>
+        <p class="sec-body">Each component works alone and with everything else. States are considered. Accessibility is non-negotiable. The system scales because the parts are honest.</p>
+        <div class="sec-demo">Component library</div>
+    </section>
+    <section class="section" id="s8">
+        <span class="sec-label">09 — Brand Story</span>
+        <h2 class="sec-heading">Why we<br>exist.</h2>
+        <p class="sec-body">Every decision traces back to a founding belief: good work, done honestly, is enough. That story isn't backstory — it's the lens behind every brand expression.</p>
+        <div class="sec-demo">Our story</div>
+    </section>
+</main>
+
+<!-- MENU OVERLAY -->
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Section menu">
+    <button class="overlay-close" id="closeBtn">close</button>
+    <div class="menu-grid" id="menuGrid"></div>
+</div>
+
+<script>
+'use strict';
+
+const SECTIONS = [
+    { num: '01', name: 'Tone of Voice' },
+    { num: '02', name: 'Typography' },
+    { num: '03', name: 'Color Palette' },
+    { num: '04', name: 'Photography' },
+    { num: '05', name: 'Iconography' },
+    { num: '06', name: 'Motion' },
+    { num: '07', name: 'Layout' },
+    { num: '08', name: 'Components' },
+    { num: '09', name: 'Brand Story' },
+];
+
+// ── Build menu grid ─────────────────────────────────────
+const menuGrid = document.getElementById('menuGrid');
+
+SECTIONS.forEach(({ num, name }, i) => {
+    const card = document.createElement('div');
+    card.className = 'menu-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.innerHTML = `
+        <div class="card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="19" x2="19" y2="5"/>
+                <polyline points="9 5 19 5 19 15"/>
+            </svg>
+        </div>
+        <div class="card-thumb"></div>
+        <div class="card-num">${num}</div>
+        <div class="card-name">${name}</div>
+    `;
+    const navigate = () => {
+        closeOverlay();
+        setTimeout(() => document.getElementById(`s${i}`)?.scrollIntoView({ behavior: 'smooth' }), 360);
+    };
+    card.addEventListener('click', navigate);
+    card.addEventListener('keydown', e => e.key === 'Enter' && navigate());
+    menuGrid.appendChild(card);
+});
+
+// ── SVG pill progress ───────────────────────────────────
+const navInner       = document.getElementById('navInner');
+const navSvg         = document.getElementById('navSvg');
+const svgTrack       = document.getElementById('svgTrack');
+const svgFill        = document.getElementById('svgFill');
+const navSectionName = document.getElementById('navSectionName');
+
+let pillPerimeter = 600;
+
+function initPillSvg() {
+    const r   = navInner.getBoundingClientRect();
+    const W   = Math.round(r.width);
+    const H   = Math.round(r.height);
+    const rx  = H / 2;
+    const pad = 2;
+
+    navSvg.setAttribute('width',   W + pad * 2);
+    navSvg.setAttribute('height',  H + pad * 2);
+    navSvg.setAttribute('viewBox', `0 0 ${W + pad * 2} ${H + pad * 2}`);
+
+    // Explicit pill path starting from left-center, tracing clockwise
+    const x = pad, y = pad;
+    const d = [
+        `M ${x} ${y + rx}`,
+        `A ${rx} ${rx} 0 0 1 ${x + rx} ${y}`,
+        `L ${x + W - rx} ${y}`,
+        `A ${rx} ${rx} 0 0 1 ${x + W} ${y + rx}`,
+        `A ${rx} ${rx} 0 0 1 ${x + W - rx} ${y + H}`,
+        `L ${x + rx} ${y + H}`,
+        `A ${rx} ${rx} 0 0 1 ${x} ${y + rx}`,
+    ].join(' ');
+
+    svgTrack.setAttribute('d', d);
+    svgFill.setAttribute('d', d);
+
+    // Use getTotalLength() for a precise perimeter — no manual formula needed
+    pillPerimeter = svgFill.getTotalLength();
+    svgFill.setAttribute('stroke-dasharray',  pillPerimeter);
+    svgFill.setAttribute('stroke-dashoffset', pillPerimeter);
+}
+
+// ── Scroll tracking ─────────────────────────────────────
+const pageSections = Array.from(document.querySelectorAll('.section'));
+let lastActive = 0;
+
+function onScroll() {
+    const scrolled  = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const progress  = maxScroll > 0 ? Math.min(scrolled / maxScroll, 1) : 0;
+
+    svgFill.setAttribute('stroke-dashoffset', pillPerimeter * (1 - progress));
+
+    const mid = window.innerHeight * 0.5;
+    let active = 0;
+    pageSections.forEach((sec, i) => {
+        if (sec.getBoundingClientRect().top <= mid) active = i;
+    });
+
+    if (active !== lastActive) {
+        lastActive = active;
+        navSectionName.classList.add('fade');
+        setTimeout(() => {
+            navSectionName.textContent = `${active + 1}. ${SECTIONS[active].name}`;
+            navSectionName.classList.remove('fade');
+        }, 100);
+    }
+}
+
+// ── Menu toggle ─────────────────────────────────────────
+const overlay  = document.getElementById('overlay');
+const navPill  = document.getElementById('navPill');
+const closeBtn = document.getElementById('closeBtn');
+
+function openOverlay() {
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeOverlay() {
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+navPill.addEventListener('click',   openOverlay);
+navPill.addEventListener('keydown', e => e.key === 'Enter' && openOverlay());
+closeBtn.addEventListener('click',  closeOverlay);
+document.addEventListener('keydown', e => e.key === 'Escape' && closeOverlay());
+
+// ── Init ────────────────────────────────────────────────
+window.addEventListener('scroll', onScroll, { passive: true });
+
+requestAnimationFrame(() => requestAnimationFrame(() => {
+    initPillSvg();
+    onScroll();
+}));
+</script>
+</body>
+</html>
