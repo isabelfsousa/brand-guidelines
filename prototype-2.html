@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Guidelines — Prototype 2</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #1a1a1a;
+        }
+
+        /* ── WALL ─────────────────────────────────────── */
+        .wall {
+            position: fixed;
+            inset: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+            padding: 5px;
+            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .wall.dimmed {
+            transform: scale(0.92);
+            opacity: 0.12;
+            pointer-events: none;
+        }
+
+        /* ── CARDS ────────────────────────────────────── */
+        .card {
+            background: #c6c2bc;
+            border-radius: 9px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                        background 0.15s;
+        }
+
+        .card:hover { transform: scale(1.025); z-index: 2; background: #bbb7b0; }
+
+        .card-num {
+            position: absolute;
+            top: 14px; left: 16px;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(0,0,0,0.28);
+        }
+
+        .card-thumb {
+            position: absolute;
+            top: 12px; right: 12px;
+            width: 52px; height: 52px;
+            background: rgba(255,255,255,0.22);
+            border-radius: 6px;
+        }
+
+        .card-name {
+            position: absolute;
+            bottom: 14px; left: 16px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #1a1a1a;
+        }
+
+        /* ── EXPANDED PANEL ───────────────────────────── */
+        .expanded {
+            position: fixed;
+            z-index: 200;
+            background: #c6c2bc;
+            overflow: hidden;
+            visibility: hidden;
+        }
+
+        .expanded.active { visibility: visible; }
+
+        .expanded-inner {
+            position: absolute;
+            inset: 0;
+            padding: 72px 64px 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.22s ease;
+        }
+
+        .expanded.content-visible .expanded-inner { opacity: 1; }
+
+        .exp-close {
+            position: absolute;
+            top: 22px; right: 22px;
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0,0,0,0.1);
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+            z-index: 201;
+        }
+
+        .exp-close:hover { background: rgba(0,0,0,0.18); }
+
+        .exp-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .exp-heading {
+            font-size: clamp(52px, 7.5vw, 100px);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 0.92;
+            color: #1a1a1a;
+            margin-bottom: 28px;
+        }
+
+        .exp-body {
+            font-size: 16px;
+            line-height: 1.65;
+            color: rgba(0,0,0,0.48);
+            max-width: 480px;
+            margin-bottom: 44px;
+        }
+
+        .exp-demo {
+            height: 200px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(0,0,0,0.2);
+        }
+
+        /* ── PROTO SWITCHER ───────────────────────────── */
+        .switcher {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 300;
+            display: flex;
+            gap: 8px;
+        }
+
+        .switcher a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(12px);
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 9px 16px;
+            border-radius: 100px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .switcher a:hover { background: rgba(255,255,255,0.25); color: #fff; }
+        .switcher a.current { background: rgba(255,255,255,0.9); color: #1a1a1a; }
+    </style>
+</head>
+<body>
+
+<div class="wall" id="wall"></div>
+
+<div class="expanded" id="expanded">
+    <button class="exp-close" id="closeBtn" aria-label="Close">×</button>
+    <div class="expanded-inner">
+        <span class="exp-label"  id="expLabel"></span>
+        <h2  class="exp-heading" id="expHeading"></h2>
+        <p   class="exp-body"    id="expBody"></p>
+        <div class="exp-demo"    id="expDemo"></div>
+    </div>
+</div>
+
+<nav class="switcher">
+    <a href="index.html">Proto 1</a>
+    <a href="prototype-2.html" class="current">Proto 2</a>
+</nav>
+
+<script>
+'use strict';
+
+const SECTIONS = [
+    { num: '01', name: 'Tone of Voice', label: '01 — Tone of Voice',  heading: 'How we\nspeak.',        body: 'Confident, clear, human. We say what we mean without fuss — because the best writing never wastes anyone\'s time. Every word earns its place.', demo: 'Voice examples' },
+    { num: '02', name: 'Typography',    label: '02 — Typography',     heading: 'Letters\nat work.',     body: 'A commanding display face paired with a neutral body typeface. Hierarchy is visible. Scale is expressive. Together they hold any layout together.', demo: 'Type specimens' },
+    { num: '03', name: 'Color Palette', label: '03 — Color Palette',  heading: 'Colour\nwith intent.',  body: 'Earthy, restrained, purposeful. A neutral core with accent tones that pull focus exactly where it\'s needed — never decorative for decoration\'s sake.', demo: 'Colour swatches' },
+    { num: '04', name: 'Photography',   label: '04 — Photography',    heading: 'Real\nmoments.',        body: 'Honest light. Unguarded expressions. Environments as they actually look. Our photography doesn\'t perform — it observes. That restraint makes it true.', demo: 'Photo library' },
+    { num: '05', name: 'Iconography',   label: '05 — Iconography',    heading: 'Precise\nmarks.',       body: 'Every icon lives on a 24px grid, drawn at a consistent stroke weight. Legible at any size, designed as a family rather than a loose collection.', demo: 'Icon grid' },
+    { num: '06', name: 'Motion',        label: '06 — Motion',         heading: 'Nothing\nfor show.',    body: 'Motion is intention made visible. We animate to guide attention and confirm actions — never to impress. Gentle easing. Short durations. Purpose in every frame.', demo: 'Motion principles' },
+    { num: '07', name: 'Layout',        label: '07 — Layout',         heading: 'Room to\nbreathe.',     body: 'A 12-column grid gives structure without constraint. Generous margins and typographic rhythm make space an active design choice, never an afterthought.', demo: 'Grid system' },
+    { num: '08', name: 'Components',    label: '08 — Components',     heading: 'Built as\na system.',   body: 'Each component works alone and with everything else. States are considered. Accessibility is non-negotiable. The system scales because the parts are honest.', demo: 'Component library' },
+    { num: '09', name: 'Brand Story',   label: '09 — Brand Story',    heading: 'Why we\nexist.',        body: 'Every decision traces back to a founding belief: good work, done honestly, is enough. That story isn\'t backstory — it\'s the lens behind every brand expression.', demo: 'Our story' },
+];
+
+const wall      = document.getElementById('wall');
+const expanded  = document.getElementById('expanded');
+const closeBtn  = document.getElementById('closeBtn');
+
+let openRect = null;
+
+SECTIONS.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.innerHTML = `
+        <div class="card-num">${s.num}</div>
+        <div class="card-thumb"></div>
+        <div class="card-name">${s.name}</div>
+    `;
+    card.addEventListener('click', () => open(card, s));
+    card.addEventListener('keydown', e => e.key === 'Enter' && open(card, s));
+    wall.appendChild(card);
+});
+
+function open(card, section) {
+    openRect = card.getBoundingClientRect();
+
+    document.getElementById('expLabel').textContent   = section.label;
+    document.getElementById('expHeading').innerHTML   = section.heading.replace('\n', '<br>');
+    document.getElementById('expBody').textContent    = section.body;
+    document.getElementById('expDemo').textContent    = section.demo;
+
+    // Snap to card bounds with no transition
+    setExpandedRect(openRect, 9, 'none');
+    expanded.classList.add('active');
+
+    wall.classList.add('dimmed');
+
+    // Next frame: animate to full screen
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        setExpandedRect({ top: 0, left: 0, width: window.innerWidth, height: window.innerHeight }, 0,
+            'top 0.52s cubic-bezier(0.4,0,0.2,1), left 0.52s cubic-bezier(0.4,0,0.2,1), width 0.52s cubic-bezier(0.4,0,0.2,1), height 0.52s cubic-bezier(0.4,0,0.2,1), border-radius 0.52s cubic-bezier(0.4,0,0.2,1)');
+        setTimeout(() => expanded.classList.add('content-visible'), 380);
+    }));
+}
+
+function close() {
+    expanded.classList.remove('content-visible');
+
+    setTimeout(() => {
+        if (openRect) {
+            setExpandedRect(openRect, 9,
+                'top 0.45s cubic-bezier(0.4,0,0.2,1), left 0.45s cubic-bezier(0.4,0,0.2,1), width 0.45s cubic-bezier(0.4,0,0.2,1), height 0.45s cubic-bezier(0.4,0,0.2,1), border-radius 0.45s cubic-bezier(0.4,0,0.2,1)');
+        }
+        wall.classList.remove('dimmed');
+        setTimeout(() => {
+            expanded.classList.remove('active');
+            expanded.removeAttribute('style');
+            openRect = null;
+        }, 460);
+    }, 100);
+}
+
+function setExpandedRect({ top, left, width, height }, radius, transition) {
+    expanded.style.cssText = `
+        top: ${top}px;
+        left: ${left}px;
+        width: ${width}px;
+        height: ${height}px;
+        border-radius: ${radius}px;
+        transition: ${transition};
+    `;
+}
+
+closeBtn.addEventListener('click', close);
+document.addEventListener('keydown', e => e.key === 'Escape' && close());
+</script>
+</body>
+</html>
