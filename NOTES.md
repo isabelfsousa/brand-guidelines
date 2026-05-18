@@ -16,8 +16,8 @@ Zoom wall navigation. Full-screen 7-column × 3-row grid of cards. Drag left/rig
 - 3 core columns in the center (01–09)
 - 2 application columns on the right (B1–B6)
 
-### Proto 3 — `prototype-3.html` (to do)
-TBD
+### Proto 3 — `prototype-3.html`
+CoverFlow navigation (iTunes-style). All 21 cards in a horizontal 3D carousel — center card faces forward, side cards rotate ~68° around Y axis. Drag left/right, arrow keys, or trackpad scroll to navigate. Click a side card to bring it to center. Click the center card to zoom it into full screen (same animation as Proto 2). `-webkit-box-reflect` adds a subtle reflection below each card.
 
 ## Sections (core 9)
 | # | Name |

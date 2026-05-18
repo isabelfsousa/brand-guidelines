@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Guidelines — Prototype 3</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%; overflow: hidden;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #1a1a1a;
+            user-select: none;
+        }
+
+        /* ── STAGE ─────────────────────────────────────── */
+        #stage {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            perspective: 1800px;
+            perspective-origin: 50% 50%;
+        }
+
+        /* ── COVERFLOW ─────────────────────────────────── */
+        #coverflow {
+            position: relative;
+            width: 0;
+            height: 440px;
+            flex-shrink: 0;
+        }
+
+        /* ── CARDS ─────────────────────────────────────── */
+        .cf-card {
+            position: absolute;
+            width: 340px;
+            height: 440px;
+            left: -170px;
+            top: 0;
+            background: #c6c2bc;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            will-change: transform, opacity;
+            transition: transform 0.46s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity   0.46s cubic-bezier(0.4, 0, 0.2, 1),
+                        box-shadow 0.46s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-box-reflect: below 3px linear-gradient(rgba(0,0,0,0.28) 0%, transparent 75%);
+        }
+
+        .cf-card.side { background: #b8b4ae; }
+
+        .cf-card.is-center {
+            box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+        }
+
+        .cf-card-num {
+            position: absolute;
+            top: 20px; left: 22px;
+            font-size: 11px; font-weight: 600;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: rgba(0,0,0,0.3);
+        }
+
+        .cf-card-thumb {
+            position: absolute;
+            top: 16px; right: 16px;
+            width: 56px; height: 56px;
+            background: rgba(255,255,255,0.22);
+            border-radius: 8px;
+        }
+
+        .cf-card-name {
+            position: absolute;
+            bottom: 62px; left: 22px; right: 22px;
+            font-size: 28px; font-weight: 800;
+            letter-spacing: -0.03em; line-height: 1.05;
+            color: #1a1a1a;
+        }
+
+        .cf-card-sub {
+            position: absolute;
+            bottom: 24px; left: 22px;
+            font-size: 10px; font-weight: 500;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: rgba(0,0,0,0.25);
+        }
+
+        /* ── INFO STRIP ─────────────────────────────────── */
+        #cfInfo {
+            margin-top: 90px; /* clear the reflection */
+            text-align: center;
+            flex-shrink: 0;
+            pointer-events: none;
+        }
+
+        #cfInfoNum {
+            font-size: 10px; font-weight: 600;
+            letter-spacing: 0.18em; text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            margin-bottom: 6px;
+        }
+
+        #cfInfoName {
+            font-size: 19px; font-weight: 700;
+            letter-spacing: -0.02em;
+            color: rgba(255,255,255,0.78);
+        }
+
+        /* ── EDGE FADE ──────────────────────────────────── */
+        #stage::before, #stage::after {
+            content: '';
+            position: fixed;
+            top: 0; bottom: 0;
+            width: 140px;
+            z-index: 50;
+            pointer-events: none;
+        }
+        #stage::before { left:  0; background: linear-gradient(to right, #1a1a1a 20%, transparent); }
+        #stage::after  { right: 0; background: linear-gradient(to left,  #1a1a1a 20%, transparent); }
+
+        /* ── EXPANDED PANEL ─────────────────────────────── */
+        .expanded {
+            position: fixed;
+            z-index: 200;
+            background: #c6c2bc;
+            overflow: hidden;
+            visibility: hidden;
+        }
+
+        .expanded.active { visibility: visible; }
+
+        .expanded-inner {
+            position: absolute; inset: 0;
+            padding: 72px 64px 64px;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            opacity: 0;
+            transition: opacity 0.22s ease;
+        }
+
+        .expanded.content-visible .expanded-inner { opacity: 1; }
+
+        .exp-close {
+            position: absolute; top: 22px; right: 22px;
+            width: 42px; height: 42px;
+            border-radius: 50%; border: none;
+            background: rgba(0,0,0,0.1);
+            font-size: 22px; cursor: pointer; color: #1a1a1a;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s; z-index: 201;
+        }
+
+        .exp-close:hover { background: rgba(0,0,0,0.18); }
+
+        .exp-label {
+            font-size: 11px; font-weight: 500;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: rgba(0,0,0,0.3); margin-bottom: 20px;
+        }
+
+        .exp-heading {
+            font-size: clamp(52px, 7.5vw, 100px);
+            font-weight: 800; letter-spacing: -0.04em; line-height: 0.92;
+            color: #1a1a1a; margin-bottom: 28px;
+        }
+
+        .exp-body {
+            font-size: 16px; line-height: 1.65;
+            color: rgba(0,0,0,0.48); max-width: 480px; margin-bottom: 44px;
+        }
+
+        .exp-demo {
+            height: 200px;
+            background: rgba(255,255,255,0.2); border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+            color: rgba(0,0,0,0.2);
+        }
+
+        /* ── HINT LABEL (center card) ────────────────────── */
+        #hintLabel {
+            position: fixed;
+            bottom: 64px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px; font-weight: 500;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: rgba(255,255,255,0.18);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* ── PROTO SWITCHER ─────────────────────────────── */
+        .switcher {
+            position: fixed; bottom: 20px; right: 20px;
+            z-index: 300; display: flex; gap: 8px;
+        }
+
+        .switcher a {
+            display: inline-flex; align-items: center;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(12px);
+            color: rgba(255,255,255,0.6); text-decoration: none;
+            font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+            padding: 9px 16px; border-radius: 100px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .switcher a:hover  { background: rgba(255,255,255,0.22); color: #fff; }
+        .switcher a.active { background: rgba(255,255,255,0.9);  color: #1a1a1a; }
+    </style>
+</head>
+<body>
+
+<div id="stage">
+    <div id="coverflow"></div>
+    <div id="cfInfo">
+        <div id="cfInfoNum"></div>
+        <div id="cfInfoName"></div>
+    </div>
+</div>
+
+<div id="hintLabel">click to open</div>
+
+<div class="expanded" id="expanded">
+    <button class="exp-close" id="closeBtn" aria-label="Close">×</button>
+    <div class="expanded-inner">
+        <span class="exp-label"   id="expLabel"></span>
+        <h2   class="exp-heading" id="expHeading"></h2>
+        <p    class="exp-body"    id="expBody"></p>
+        <div  class="exp-demo"    id="expDemo"></div>
+    </div>
+</div>
+
+<nav class="switcher">
+    <a href="index.html">Proto 1</a>
+    <a href="prototype-2.html">Proto 2</a>
+    <a href="prototype-3.html" class="active">Proto 3</a>
+</nav>
+
+<script>
+'use strict';
+
+const SECTIONS = [
+    // ── 2 left columns ─────────────────────────────────
+    { num: 'A1', name: 'Brand Overview', label: 'A1 — Brand Overview', heading: 'Who we\nare.',          body: 'An integrated view of the brand: its origin, purpose, and the values that shape everything from product decisions to the tone of a single sentence.', demo: 'Overview',          side: true },
+    { num: 'A2', name: 'Mission',        label: 'A2 — Mission',        heading: 'What we\ndo.',          body: 'We exist to make complexity feel simple and honest feel bold. That mission runs through every touchpoint — it\'s not a statement, it\'s a standard.',      demo: 'Mission statement', side: true },
+    { num: 'A3', name: 'Vision',         label: 'A3 — Vision',         heading: 'Where\nwe\'re going.',  body: 'A world where brands speak like people, design earns trust, and every interaction leaves the audience better informed than before it began.',               demo: 'Vision board',      side: true },
+    { num: 'A4', name: 'Values',         label: 'A4 — Values',         heading: 'What we\nstand for.',   body: 'Clarity over cleverness. Honesty over performance. Restraint over excess. These aren\'t aspirations — they\'re the filter through which every decision passes.', demo: 'Values grid',    side: true },
+    { num: 'A5', name: 'Audience',       label: 'A5 — Audience',       heading: 'Who we\nserve.',        body: 'Curious, discerning people who value craft and directness in equal measure. They notice when something is done well, and they remember when it isn\'t.',  demo: 'Audience profiles', side: true },
+    { num: 'A6', name: 'Personality',    label: 'A6 — Personality',    heading: 'How we\nshow up.',      body: 'Confident without being loud. Warm without being familiar. We have a point of view and we share it — with evidence, not volume.',                        demo: 'Personality spectrum', side: true },
+
+    // ── 3 core columns ─────────────────────────────────
+    { num: '01', name: 'Tone of Voice',  label: '01 — Tone of Voice',  heading: 'How we\nspeak.',        body: 'Confident, clear, human. We say what we mean without fuss — because the best writing never wastes anyone\'s time. Every word earns its place.',           demo: 'Voice examples' },
+    { num: '02', name: 'Typography',     label: '02 — Typography',     heading: 'Letters\nat work.',     body: 'A commanding display face paired with a neutral body typeface. Hierarchy is visible. Scale is expressive. Together they hold any layout together.',        demo: 'Type specimens' },
+    { num: '03', name: 'Color Palette',  label: '03 — Color Palette',  heading: 'Colour\nwith intent.',  body: 'Earthy, restrained, purposeful. A neutral core with accent tones that pull focus exactly where it\'s needed — never decorative for decoration\'s sake.', demo: 'Colour swatches' },
+    { num: '04', name: 'Photography',    label: '04 — Photography',    heading: 'Real\nmoments.',        body: 'Honest light. Unguarded expressions. Environments as they actually look. Our photography doesn\'t perform — it observes. That restraint makes it true.',  demo: 'Photo library' },
+    { num: '05', name: 'Iconography',    label: '05 — Iconography',    heading: 'Precise\nmarks.',       body: 'Every icon lives on a 24px grid, drawn at a consistent stroke weight. Legible at any size, designed as a family rather than a loose collection.',         demo: 'Icon grid' },
+    { num: '06', name: 'Motion',         label: '06 — Motion',         heading: 'Nothing\nfor show.',    body: 'Motion is intention made visible. We animate to guide attention and confirm actions — never to impress. Gentle easing. Short durations. Purpose in every frame.', demo: 'Motion principles' },
+    { num: '07', name: 'Layout',         label: '07 — Layout',         heading: 'Room to\nbreathe.',     body: 'A 12-column grid gives structure without constraint. Generous margins and typographic rhythm make space an active design choice, never an afterthought.',  demo: 'Grid system' },
+    { num: '08', name: 'Components',     label: '08 — Components',     heading: 'Built as\na system.',   body: 'Each component works alone and with everything else. States are considered. Accessibility is non-negotiable. The system scales because the parts are honest.', demo: 'Component library' },
+    { num: '09', name: 'Brand Story',    label: '09 — Brand Story',    heading: 'Why we\nexist.',        body: 'Every decision traces back to a founding belief: good work, done honestly, is enough. That story isn\'t backstory — it\'s the lens behind every brand expression.', demo: 'Our story' },
+
+    // ── 2 right columns ────────────────────────────────
+    { num: 'B1', name: 'Print',          label: 'B1 — Print',          heading: 'On the\npage.',         body: 'Margins, paper stock, print production specs. How the brand holds up when rendered in CMYK and handed to someone across a table.',                        demo: 'Print specs',       side: true },
+    { num: 'B2', name: 'Digital',        label: 'B2 — Digital',        heading: 'On the\nscreen.',       body: 'Pixel density, responsive behaviour, dark mode considerations. The brand at every resolution and every context a screen can offer.',                       demo: 'Digital specs',     side: true },
+    { num: 'B3', name: 'Social Media',   label: 'B3 — Social Media',   heading: 'In the\nfeed.',         body: 'Formats, crop zones, caption voice. How to compress the brand into a thumb\'s-width of attention without losing any of its character.',                   demo: 'Social templates',  side: true },
+    { num: 'B4', name: 'Video',          label: 'B4 — Video',          heading: 'Frame\nby frame.',      body: 'Title cards, lower-thirds, transition logic. Motion applied at scale — every frame a brand decision, every cut considered.',                              demo: 'Video specs',       side: true },
+    { num: 'B5', name: 'Partnerships',   label: 'B5 — Partnerships',   heading: 'Side by\nside.',        body: 'Co-branding rules, placement, minimum clear space. How the brand shares space without losing its voice or diluting its identity.',                         demo: 'Co-brand examples', side: true },
+    { num: 'B6', name: 'Brand in Use',   label: 'B6 — Brand in Use',   heading: 'Real\nworld.',          body: 'The brand across environments: storefronts, packaging, events, merch. Evidence that the system holds up far beyond the screen.',                          demo: 'Real world examples', side: true },
+];
+
+// ── Config ──────────────────────────────────────────────
+const SIDE_ROT  = 68;   // degrees all side cards rotate around Y
+const FIRST_X   = 248;  // px: center of ±1 card from origin
+const STRIDE    = 108;  // px: spacing between ±1, ±2, ±3... cards
+const MAX_VIS   = 5;    // how many cards visible on each side
+
+let current = 6; // start at '01 Tone of Voice'
+
+// ── Build card elements ──────────────────────────────────
+const cfEl    = document.getElementById('coverflow');
+const cards   = [];
+
+SECTIONS.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'cf-card' + (s.side ? ' side' : '');
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.innerHTML = `
+        <div class="cf-card-num">${s.num}</div>
+        <div class="cf-card-thumb"></div>
+        <div class="cf-card-name">${s.name}</div>
+        <div class="cf-card-sub">${s.label}</div>
+    `;
+    el.addEventListener('click', () => onCardClick(i));
+    cfEl.appendChild(el);
+    cards.push(el);
+});
+
+// ── Transform calculation ────────────────────────────────
+function calcTransform(offset) {
+    const abs  = Math.abs(offset);
+    const sign = Math.sign(offset);
+
+    if (abs > MAX_VIS) {
+        return {
+            transform:     `translateX(${sign * 1100}px) rotateY(${-sign * SIDE_ROT}deg)`,
+            opacity:       0,
+            zIndex:        0,
+            pointerEvents: 'none',
+        };
+    }
+
+    if (offset === 0) {
+        return {
+            transform:     'translateX(0px) rotateY(0deg) scale(1)',
+            opacity:       1,
+            zIndex:        30,
+            pointerEvents: 'auto',
+        };
+    }
+
+    const x    = sign * (FIRST_X + (abs - 1) * STRIDE);
+    const rotY = -sign * SIDE_ROT;
+    const sc   = Math.max(0.68, 1 - abs * 0.06);
+
+    return {
+        transform:     `translateX(${x}px) rotateY(${rotY}deg) scale(${sc})`,
+        opacity:       abs <= MAX_VIS ? 1 : 0,
+        zIndex:        30 - abs,
+        pointerEvents: abs <= 3 ? 'auto' : 'none',
+    };
+}
+
+// ── Render ───────────────────────────────────────────────
+function render(instant = false) {
+    if (instant) {
+        cards.forEach(el => { el.style.transition = 'none'; });
+    }
+
+    cards.forEach((el, i) => {
+        const { transform, opacity, zIndex, pointerEvents } = calcTransform(i - current);
+        el.style.transform     = transform;
+        el.style.opacity       = opacity;
+        el.style.zIndex        = zIndex;
+        el.style.pointerEvents = pointerEvents;
+        el.classList.toggle('is-center', i === current);
+    });
+
+    const s = SECTIONS[current];
+    document.getElementById('cfInfoNum').textContent  = s.num;
+    document.getElementById('cfInfoName').textContent = s.name;
+
+    if (instant) {
+        requestAnimationFrame(() => {
+            cards.forEach(el => { el.style.transition = ''; });
+        });
+    }
+}
+
+function goTo(idx) {
+    current = Math.max(0, Math.min(SECTIONS.length - 1, idx));
+    render();
+}
+
+// ── Click handling ───────────────────────────────────────
+function onCardClick(i) {
+    if (Math.abs(dragDelta) > 8) return;
+    if (i === current) {
+        openSection(SECTIONS[i]);
+    } else {
+        goTo(i);
+    }
+}
+
+// ── Drag / swipe ─────────────────────────────────────────
+let isDragging  = false;
+let dragStartX  = 0;
+let dragDelta   = 0;
+const DRAG_THRESH = 80;
+
+document.addEventListener('mousedown', e => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragDelta  = 0;
+});
+document.addEventListener('mousemove', e => {
+    if (isDragging) dragDelta = e.clientX - dragStartX;
+});
+document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    if (dragDelta < -DRAG_THRESH)      goTo(current + 1);
+    else if (dragDelta > DRAG_THRESH)  goTo(current - 1);
+    dragDelta = 0;
+});
+
+document.addEventListener('touchstart', e => {
+    isDragging = true;
+    dragStartX = e.touches[0].clientX;
+    dragDelta  = 0;
+}, { passive: true });
+document.addEventListener('touchmove', e => {
+    if (isDragging) dragDelta = e.touches[0].clientX - dragStartX;
+}, { passive: true });
+document.addEventListener('touchend', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    if (dragDelta < -DRAG_THRESH)     goTo(current + 1);
+    else if (dragDelta > DRAG_THRESH) goTo(current - 1);
+    dragDelta = 0;
+});
+
+// ── Wheel / trackpad ─────────────────────────────────────
+let wheelLocked = false;
+document.addEventListener('wheel', e => {
+    e.preventDefault();
+    if (wheelLocked) return;
+    wheelLocked = true;
+    setTimeout(() => { wheelLocked = false; }, 380);
+    const d = e.deltaX || e.deltaY;
+    if (d > 5)       goTo(current + 1);
+    else if (d < -5) goTo(current - 1);
+}, { passive: false });
+
+// ── Keyboard ─────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'Escape')     closeSection();
+});
+
+// ── Open / close section ─────────────────────────────────
+let openRect = null;
+const expanded = document.getElementById('expanded');
+
+function openSection(s) {
+    const centerCard = cards[current];
+    openRect = centerCard.getBoundingClientRect();
+
+    document.getElementById('expLabel').textContent   = s.label;
+    document.getElementById('expHeading').innerHTML   = s.heading.replace('\n', '<br>');
+    document.getElementById('expBody').textContent    = s.body;
+    document.getElementById('expDemo').textContent    = s.demo;
+
+    setRect(openRect, 12, 'none');
+    expanded.classList.add('active');
+
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        setRect(
+            { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight },
+            0,
+            'top .52s cubic-bezier(.4,0,.2,1),left .52s cubic-bezier(.4,0,.2,1),width .52s cubic-bezier(.4,0,.2,1),height .52s cubic-bezier(.4,0,.2,1),border-radius .52s cubic-bezier(.4,0,.2,1)'
+        );
+        setTimeout(() => expanded.classList.add('content-visible'), 380);
+    }));
+}
+
+function closeSection() {
+    expanded.classList.remove('content-visible');
+    setTimeout(() => {
+        if (openRect) {
+            setRect(
+                openRect, 12,
+                'top .45s cubic-bezier(.4,0,.2,1),left .45s cubic-bezier(.4,0,.2,1),width .45s cubic-bezier(.4,0,.2,1),height .45s cubic-bezier(.4,0,.2,1),border-radius .45s cubic-bezier(.4,0,.2,1)'
+            );
+        }
+        setTimeout(() => {
+            expanded.classList.remove('active');
+            expanded.removeAttribute('style');
+            openRect = null;
+        }, 460);
+    }, 100);
+}
+
+function setRect({ top, left, width, height }, r, t) {
+    expanded.style.cssText = `top:${top}px;left:${left}px;width:${width}px;height:${height}px;border-radius:${r}px;transition:${t};`;
+}
+
+document.getElementById('closeBtn').addEventListener('click', closeSection);
+
+// ── Init ─────────────────────────────────────────────────
+render(true);
+</script>
+</body>
+</html>
